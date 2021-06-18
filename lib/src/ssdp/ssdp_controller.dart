@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 typedef NetworkInterfacesFactory = Future<Iterable<NetworkInterface>> Function(
     InternetAddressType type);
@@ -80,7 +81,10 @@ class SSDPController {
       ));
       _sockets.add(socket);
 
-      _incoming.multicastLoopback = false;
+      final value = Uint8List.fromList(
+           _address.rawAddress + interface.addresses[0].rawAddress);
+       _incoming
+           .setRawOption(RawSocketOption(RawSocketOption.levelIPv4, 12, value));
       _incoming.multicastHops = 12;
       _incoming.joinMulticast(_address, interface);
     }
